@@ -56,6 +56,7 @@ for /f "tokens=2 delims=:" %%i in ('ipconfig ^| find "IPv4 Address"') do (
 set /a index+=1
 set ipv4[!index!]=%%i
 )
+set total_index=%index%
 call :construct_args
 call :printaddresses
 
@@ -65,9 +66,9 @@ set errors=%errorlevel%
 :chooseagainchooser
 set /a whatpick=errors-1
 echo:
-if %whatpick% Lss %ext_number% CALL echo %%ipv4[%whatpick%]%% | clip & echo                                             ^>Copied I.P. #%whatpick%^^^!
+if %whatpick% LEQ %total_index% CALL echo %%ipv4[%whatpick%]%% | clip & echo                                             ^>Copied I.P. #%whatpick%^^^!
 if %whatpick% Lss 0 echo|set/p=.                                         wrong&goto choose
-if %whatpick% == %ext_number% echo %ext_ip% | clip & echo                                             ^>Copied I.P. #%whatpick%^^^!
+if %first_time% NEQ 0 if %whatpick% == %ext_number% echo %ext_ip% | clip & echo                                             ^>Copied I.P. #%whatpick%^^^!
 if %whatpick%==%z_number% goto choose
 REM for /l %%i in (1,1,4) do echo:
 if %whatpick%==%r_number% set first_time=1&goto loop
@@ -112,6 +113,7 @@ exit /b
 :construct_args
 set args=
 for /l %%i in (0,1,!index!) do set args=!args!%%i&echo: >NUL
+if %first_time% NEQ 0 set /a ext_number=index+1
 set args=!args!%ext_number%
 set /a z_number=ext_number+1
 set /a r_number=ext_number+2
@@ -128,7 +130,6 @@ echo:
 for /l %%i in (1,1,8) do echo:
 
 for /l %%a in (0,1,!index!) do echo:                                    %%a^> My ip address: !ipv4[%%a]!
-set /a ext_number=index+1
 echo: 
 echo                                     %ext_number%^> EXTERNAL I.P :  %green%%ext_ip%%reset%
 echo:
