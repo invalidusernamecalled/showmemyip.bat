@@ -56,10 +56,11 @@ for /f "tokens=2 delims=:" %%i in ('ipconfig ^| find "IPv4 Address"') do (
 set /a index+=1
 set ipv4[!index!]=%%i
 )
+call :construct_args
 call :printaddresses
 
 :choose
-echo|set/p=$&choice /c !args!zrc%q_number% /n  >NUL
+choice /c !args!zrc%q_number% /n  >NUL
 set errors=%errorlevel%
 :chooseagainchooser
 set /a whatpick=errors-1
@@ -71,8 +72,8 @@ if %whatpick%==%z_number% goto choose
 REM for /l %%i in (1,1,4) do echo:
 if %whatpick%==%r_number% set first_time=1&goto loop
 if %whatpick%==%c_number% goto begin
-echo:                                [P]ing website   [g]ateway ping  {0}Skip
-echo|set/p=$&choice /c pg0 /n >NUL
+echo:                                [P]ing website   [g]ateway ping  {%q_number%}Skip
+echo|set/p=$&choice /c pg%q_number% /n >NUL
 if %errorlevel%==1 call :pingdomain %pingdomains%
 if %errorlevel%==2 call :pingdomain %gateways%
 call :printaddresses
@@ -131,8 +132,7 @@ set /a ext_number=index+1
 echo: 
 echo                                     %ext_number%^> EXTERNAL I.P :  %green%%ext_ip%%reset%
 echo:
-call :construct_args
-echo:                            [C]hange Client      [R]efresh        [!args!]Copy      {%q_number%}toolbox
+echo:                            [C]hange Client      [R]efresh        [!args!]Copy      {%q_number%}toolbox         
 exit /b
 
 :createkey
