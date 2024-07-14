@@ -17,7 +17,7 @@ if exist "%tmp%\whatismyip.config.client.conf" for /f "delims=" %%i in ('type "%
 
 
 
-for %%a in (%websites%) do set /a total_index+=1
+for %%a in (%websites%) do set /a total_index_websites+=1
 
 
 
@@ -37,7 +37,7 @@ choice /c zxc  /n %add_options% >NUL
 set add_options=/d c /t 20
 if %errorlevel%==3 goto next
 if %errorlevel%==1 (set /a website_index+=1) else (set /a website_index-=1)
-if %website_index% GTR %total_index% set /a website_index=%total_index%
+if %website_index% GTR %total_index_websites% set /a website_index=%total_index_websites%
 if %website_index% LSS 1   set /a website_index=1
 goto begin
 :next
@@ -76,7 +76,7 @@ if %whatpick%==%p_number% call :pingdomain %pingdomains%
 if %whatpick%==%g_number% call :pingdomain %gateways%
 
 echo:                            {%q_number%}Next  [C]Change client  
-echo|set/p=$&choice /c c%q_number% /n >NUL
+echo|set/p=$&choice /c cabdefghijklmnopqrstuvwxyz0123456789 /n >NUL
 if %errorlevel%==1 goto begin
 call :printaddresses
 goto choose
