@@ -52,7 +52,8 @@ echo|set/p=.                                                & for /l %%i in (1,1
 echo:
 for /f "delims=" %%i in ("*") do echo:                                %green%?? My ip address.. Retrieveing........%reset%
 if %first_time% NEQ 0 for /f "delims=" %%i in ('%website% 2^>NUL') do set ext_ip=%%i
-for /f "tokens=2 delims=:" %%i in ('ipconfig ^| find "IPv4 Address"') do (
+REM for /f "tokens=2 delims=:" %%i in ('ipconfig ^| find "IPv4 Address"')
+for /f "delims=" %%i in (ip.txt) do (
 set /a index+=1
 set ipv4[!index!]=%%i
 )
@@ -61,22 +62,23 @@ call :construct_args
 call :printaddresses
 
 :choose
-choice /c !args!zrc%q_number% /n  >NUL
+choice /c !args!zprg%q_number% /n  >NUL
 set errors=%errorlevel%
 :chooseagainchooser
 set /a whatpick=errors-1
-echo:
-if %whatpick% LEQ %total_index% CALL echo %%ipv4[%whatpick%]%% | clip & echo                                             ^>Copied I.P. #%whatpick%^^^!
+if %whatpick% LEQ %total_index% CALL echo %%ipv4[%whatpick%]%% | clip & echo                             ^>Copied I.P. #%whatpick%^^^!
 if %whatpick% Lss 0 echo|set/p=.                                         wrong&goto choose
-if %first_time% NEQ 0 if %whatpick% == %ext_number% echo %ext_ip% | clip & echo                                             ^>Copied I.P. #%whatpick%^^^!
+if %first_time% NEQ 0 if %whatpick% == %ext_number% echo %ext_ip% | clip & echo                             ^>Copied I.P. #%whatpick%^^^!
+if %first_time%==0 if %whatpick% == %ext_number% echo                             ^>Not set
 if %whatpick%==%z_number% goto choose
-REM for /l %%i in (1,1,4) do echo:
+echo:
 if %whatpick%==%r_number% set first_time=1&goto loop
-if %whatpick%==%c_number% goto begin
-echo:                                [P]ing website   [g]ateway ping  {%q_number%}Skip
-echo|set/p=$&choice /c pg%q_number% /n >NUL
-if %errorlevel%==1 call :pingdomain %pingdomains%
-if %errorlevel%==2 call :pingdomain %gateways%
+if %whatpick%==%p_number% call :pingdomain %pingdomains%
+if %whatpick%==%g_number% call :pingdomain %gateways%
+
+echo:                            {%q_number%}Next  [C]Change client  
+echo|set/p=$&choice /c c%q_number% /n >NUL
+if %errorlevel%==1 goto begin
 call :printaddresses
 goto choose
 
@@ -108,17 +110,18 @@ echo|set/p=^^^>^^^>^^^>...working
 echo:
 for %%a in (%*) do ping -n 1 %%~a |findstr /rc:"[=><][0-9]*ms" >NUL &&(echo|set/p=%%~a is UP&echo:) || (echo|set/p=%%~a isn't UP&echo:)
 pause >NUL
-cls
 exit /b
 :construct_args
 set args=
 for /l %%i in (0,1,!index!) do set args=!args!%%i&echo: >NUL
-if %first_time% NEQ 0 set /a ext_number=index+1
-set args=!args!%ext_number%
+set /a ext_number=index+1
+set args=!args!!ext_number!
 set /a z_number=ext_number+1
-set /a r_number=ext_number+2
-set /a c_number=ext_number+3
-set /a q_number=ext_number+4
+set /a p_number=ext_number+2
+set /a r_number=ext_number+3
+set /a g_number=ext_number+4
+set /a q_number=ext_number+5
+if %q_number% GTR 9 set q_number=D
 exit /b
 
 :printaddresses
@@ -133,7 +136,7 @@ for /l %%a in (0,1,!index!) do echo:                                    %%a^> My
 echo: 
 echo                                     %ext_number%^> EXTERNAL I.P :  %green%%ext_ip%%reset%
 echo:
-echo:                            [C]hange Client      [R]efresh        [!args!]Copy      {%q_number%}toolbox         
+echo:                            [R]efresh     [p]ing website      [g]ateway ping      [!args!]Copy      {%q_number%}next
 exit /b
 
 :createkey
