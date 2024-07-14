@@ -4,8 +4,8 @@ set websites=
 set pingdomains=
 set website_index=1
 
-if not exist key.domains.whatismyip.bat call :createkey
-           call key.domains.whatismyip.bat
+if not exist keys.whatismyip.XZ12HW.txt call :createkey
+           call :importkeys
 
 
 call :findgateways
@@ -52,8 +52,7 @@ echo|set/p=.                                                & for /l %%i in (1,1
 echo:
 for /f "delims=" %%i in ("*") do echo:                                %green%?? My ip address.. Retrieveing........%reset%
 if %first_time% NEQ 0 for /f "delims=" %%i in ('%website% 2^>NUL') do set ext_ip=%%i
-REM for /f "tokens=2 delims=:" %%i in ('ipconfig ^| find "IPv4 Address"')
-for /f "delims=" %%i in (ip.txt) do (
+for /f "tokens=2 delims=:" %%i in ('ipconfig ^| find "IPv4 Address"') do (
 set /a index+=1
 set ipv4[!index!]=%%i
 )
@@ -140,10 +139,12 @@ echo:                            [R]efresh     [p]ing website      [g]ateway pin
 exit /b
 
 :createkey
-echo set websites="curl ifconfig.me" "curl api.ipify.org" "curl ipinfo.io/ip" "curl ipecho.net/plain" > key.domains.whatismyip.bat
-echo set gateways="127.0.0.1" >> key.domains.whatismyip.bat
-echo set pingdomains="google.com" "yahoo.com" "twitter.com" "youtube.com" >> key.domains.whatismyip.bat
-
+echo #websites# "curl ifconfig.me" "curl api.ipify.org" "curl ipinfo.io/ip" "curl ipecho.net/plain" > keys.whatismyip.XZ12HW.txt
+echo #gateways# "127.0.0.1" >> keys.whatismyip.XZ12HW.txt
+echo #pingdomains# "google.com" "yahoo.com" "twitter.com" "youtube.com" >> keys.whatismyip.XZ12HW.txt
+:importkeys
+for /f "tokens=1,2* delims=#" %%i in (keys.whatismyip.XZ12HW.txt) do set %%i=%%j
+exit /b
 :::::::this section does not contain any code:::::::::::::::::::
 author: u/Sudden-March-3952 ::::::::::::::::::::::::::::::::::::
                                            ::::::::::::::::::::::::::::::::::::::::
