@@ -11,18 +11,16 @@ if not exist keys.whatismyip.XZ12HW.txt call :createkey
 call :findgateways
 
 
-
-
-if exist "%tmp%\whatismyip.config.client.conf" for /f "delims=" %%i in ('type "%tmp%\whatismyip.config.client.conf"') do set website_index=%%i&set add_options=/d 0 /t 1
-
-
-
 for %%a in (%websites%) do set /a total_index_websites+=1
 
-
-
-
-
+if exist "%tmp%\whatismyip.config.client.conf" for /f "delims=" %%i in ('type "%tmp%\whatismyip.config.client.conf"') do set website_index=%%i&set add_options=/d 0 /t 20
+set index_search=0
+for %%a in (%websites%) do (
+set /a index_search+=1
+if !index_search! == %website_index% (set website=%%~a)
+)
+if not exist "%tmp%\whatismyip.config.client.conf" goto begin
+goto next
 :begin
 cls
 echo:Select Client:
@@ -33,10 +31,10 @@ set /a index_search+=1
 if !index_search! == %website_index% (echo:          ^>%%~a&set website=%%~a) else (echo:           %%~a)
 )
 echo:
-if not defined q_number echo|set/p=z^=down x^=up {0}Next
-if defined q_number echo|set/p=z^=down x^=up {%q_number%}Next
-choice /c zx0123456789  /n %add_options% >NUL
-set add_options=/d 0 /t 20
+echo:z=down x=up 
+if not defined q_number echo|set/p={0}Next
+if defined q_number echo|set/p={%q_number%}Next
+choice /c zx0123456789d  /n %add_options% >NUL
 if %errorlevel% GEQ 3 goto next
 if %errorlevel%==1 (set /a website_index+=1) else (set /a website_index-=1)
 if %website_index% GTR %total_index_websites% set /a website_index=%total_index_websites%
