@@ -51,7 +51,7 @@ for /l %%i in (1,1,2) do echo:
 echo|set/p=.                                                & for /l %%i in (1,1,3) do echo|set/p=^^^>
 echo:
 for /f "delims=" %%i in ("*") do echo:                                %green%?? My ip address.. Retrieveing........%reset%
-if %first_time% NEQ 0 for /f "delims=" %%i in ('%website% 2^>NUL') do set ext_ip=%%i
+if %first_time% NEQ 0 for /f "delims=" %%i in ('%website% -m 2 2^>NUL') do set ext_ip=%%i
 for /f "tokens=2 delims=:" %%i in ('ipconfig ^| find "IPv4 Address"') do (
 set /a index+=1
 set ipv4[!index!]=%%i
